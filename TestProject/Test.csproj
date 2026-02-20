@@ -1,12 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <!-- Moved these inside the PropertyGroup so the build can see them -->
+    <BuildTimestamp>$([System.DateTime]::Now.ToString("yyyyMMdd-HHmm"))</BuildTimestamp>
+    <Version>0.0.0-$(BuildTimestamp)</Version>
+
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
-    <IsPackable>false</IsPackable>
+    <!-- 1. Enable auto-packaging during build/publish -->
+    <IsPackable>true</IsPackable>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <IsTestProject>true</IsTestProject>
+  
+    <NexusUrl>http://localhost:8081/repository/Nuget_HP/</NexusUrl>
+    <NexusKey>240f2403-60f4-33de-be9b-897822d4d2c6</NexusKey>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,4 +28,10 @@
     <ProjectReference Include="..\Addition\Jenkins-build.csproj" />
   </ItemGroup>
 
+  <Target Name="PushToNexus" AfterTargets="Publish">
+    <Message Importance="high" Text="Publish complete. Starting Nexus Push for version $(Version)..." />
+    <!-- Updated to use the $(Version) variable defined above -->
+    <Exec Command="dotnet pack -c $(Configuration) /p:PackageVersion=$(Version)" />
+    <Exec Command="dotnet nuget push bin/$(Configuration)/$(PackageId).$(Version).nupkg --source $(NexusUrl) --api-key $(NexusKey)" />
+  </Target>
 </Project>
