@@ -4,7 +4,7 @@
     <BuildTimestamp>$([System.DateTime]::Now.ToString("yyyyMMdd-HHmm"))</BuildTimestamp>
     <Version>0.0.0-$(BuildTimestamp)</Version>
 
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
